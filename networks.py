@@ -3,7 +3,7 @@ import torchvision.models as models
 
 class ResExtractor(nn.Module):
 
-    def __init__(self, resnetnum='50', pretrained=True):
+    def __init__(self, resnetnum='101', pretrained=True):
         super(ResExtractor, self).__init__()
 
         if resnetnum == '18':
@@ -29,8 +29,12 @@ class Baseline_ResNet_emo(nn.Module):
     def __init__(self):
         super(Baseline_ResNet_emo, self).__init__()
 
-        self.encoder = ResExtractor('50')
+        self.encoder = ResExtractor('101')
         self.avg_pool = nn.AvgPool2d(kernel_size=7)
+
+        # 정규화 및 드롭아웃 레이어 추가
+        self.batch_norm = nn.BatchNorm2d(2048)  # 배치 정규화 레이어 추가
+        self.dropout = nn.Dropout(0.5)  # 드롭아웃 레이어 추가
 
         self.daily_linear = nn.Linear(2048, 7)
         self.gender_linear = nn.Linear(2048, 6)
@@ -41,11 +45,20 @@ class Baseline_ResNet_emo(nn.Module):
         feat = self.encoder.front(x['image'])
         flatten = self.avg_pool(feat).squeeze()
 
+        # 4D로 데이터 변환
+        flatten = flatten.unsqueeze(2).unsqueeze(3)
+
+        # 정규화 및 드롭아웃 레이어 적용
+        flatten = self.batch_norm(flatten)
+        flatten = self.dropout(flatten)
+        flatten = flatten.view(flatten.size(0), -1)  # 입력 데이터를 평탄화
+
         out_daily = self.daily_linear(flatten)
         out_gender = self.gender_linear(flatten)
         out_embel = self.embel_linear(flatten)
 
         return out_daily, out_gender, out_embel
+
 
 
 if __name__ == '__main__':
