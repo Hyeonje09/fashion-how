@@ -109,7 +109,6 @@ class ETRIDataset_emo(torch.utils.data.Dataset):
         image_ = image_.float()
 
         ret = {}
-        ret['ori_image'] = image
         ret['image'] = image_
         ret['daily_label'] = daily_label
         ret['gender_label'] = gender_label

@@ -6,14 +6,14 @@ from skimage.filters import gaussian
 def gaussian_blur(image, sigma=20):
     return Image.fromarray(gaussian(image, sigma=sigma, multichannel=True))
 
-def random_flip(image, p=0.5):
-    if np.random.rand() < p:
-        return transforms.functional.hflip(image)
-    return image
+def flip(image):
+    return transforms.functional.hflip(image)
 
-def random_rotation(image, degrees=20):
-    angle = np.random.uniform(-degrees, degrees)
-    return transforms.functional.rotate(image, angle)
+def plus_rotate(image, degrees=20):
+    return transforms.functional.rotate(image, degrees)
+
+def minus_rotate(image, degrees=-20):
+    return transforms.functional.rotate(image, degrees)
 
 def apply_augmentation(image, augmentation_functions):
     augmented_images = [image]

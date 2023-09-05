@@ -8,7 +8,7 @@ class ResExtractor(nn.Module):
 
         if resnetnum == '18':
             self.resnet = models.resnet18(pretrained=pretrained)
-            self.resnet.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            #self.resnet.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
         elif resnetnum == '34':
             self.resnet = models.resnet34(pretrained=pretrained)
         elif resnetnum == '50':
