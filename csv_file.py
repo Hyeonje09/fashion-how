@@ -59,7 +59,9 @@ for idx, row in tqdm(data.iterrows(), total=len(data)):
         
         # 증강된 이미지 저장
         os.makedirs(augmented_folder_path, exist_ok=True)
-        augmented_image.save(augmented_image_path, format="JPEG")  # JPG 형식으로 저장
+        augmented_image_tensor = (augmented_image_tensor * 255).byte()  # 0-1 범위를 0-255로 조정
+        augmented_image_pil = transforms.ToPILImage()(augmented_image_tensor)
+        augmented_image_pil.save(augmented_image_path, format="JPEG")  # JPG 형식으로 저장
         
         # 증강된 이미지 정보 생성
         new_row = row.copy()

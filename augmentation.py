@@ -1,15 +1,9 @@
 from torchvision import transforms
-import numpy as np
-from PIL import Image
-from skimage.filters import gaussian
+from PIL import ImageFilter
 
-def gaussian_blur(image, kernel_size=(19, 19)):
-    image_tensor = transforms.ToTensor()(image)
-    transform = transforms.GaussianBlur(kernel_size)
-    blurred_image_tensor = transform(image_tensor)
-    blurred_image = transforms.ToPILImage()(blurred_image_tensor)
-    
-    return blurred_image
+def gaussian_blur(image, kernel_size=19):
+    image_pil = image.filter(ImageFilter.GaussianBlur(kernel_size))
+    return image_pil
 
 def flip(image):
     return transforms.functional.hflip(image)
