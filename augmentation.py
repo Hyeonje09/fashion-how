@@ -3,8 +3,13 @@ import numpy as np
 from PIL import Image
 from skimage.filters import gaussian
 
-def gaussian_blur(image, sigma=20):
-    return Image.fromarray(gaussian(image, sigma=sigma, multichannel=True))
+def gaussian_blur(image, kernel_size=(19, 19)):
+    image_tensor = transforms.ToTensor()(image)
+    transform = transforms.GaussianBlur(kernel_size)
+    blurred_image_tensor = transform(image_tensor)
+    blurred_image = transforms.ToPILImage()(blurred_image_tensor)
+    
+    return blurred_image
 
 def flip(image):
     return transforms.functional.hflip(image)

@@ -1,11 +1,11 @@
 import os
 import pandas as pd
-from PIL import Image
 import numpy as np
 from tqdm import tqdm
 import torch
-from augmentation import *
 from torchvision import transforms
+from PIL import Image
+from augmentation import *
 
 # GPU 사용 가능 여부 확인
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -36,26 +36,30 @@ for idx, row in tqdm(data.iterrows(), total=len(data)):
     # 이미지 읽기
     image = Image.open(image_path)
     
-    # 이미지를 Tensor로 변환하고 GPU로 이동
-    image_tensor = transforms.ToTensor()(image).to(device) 
+    # 이미지를 Pillow 형식으로 변환
+    pil_image = transforms.ToPILImage()(transforms.ToTensor()(image))
     
-    augmented_images = apply_augmentation(image_tensor, augmentation_functions)
+    augmented_images = [pil_image]  # 원본 이미지를 먼저 추가
     
-    for aug_idx, augmented_image in enumerate(augmented_images):
-        augmented_image_3d = augmented_image.cpu()
-        pil_image = transforms.ToPILImage()(augmented_image_3d)
+    for aug_function in augmentation_functions:
+        augmented_image = aug_function(pil_image)
+        augmented_images.append(augmented_image)
+    
+    for aug_idx, augmented_image in enumerate(augmented_images[1:], start=1):  # 첫 번째 이미지(원본)를 제외하고 순회
+        # 이미지를 Tensor로 변환
+        augmented_image_tensor = transforms.ToTensor()(augmented_image).to(device)
         
         # 증강된 이미지 저장 경로 설정
         folder_name = os.path.dirname(image_name)
         image_name_without_folders = os.path.basename(image_name)
-        aug_name = augmentation_functions[aug_idx].__name__
+        aug_name = augmentation_functions[aug_idx - 1].__name__
         augmented_image_name = f"{image_name_without_folders[:-4]}_{aug_name}_augmented.jpg"
         augmented_folder_path = os.path.join(base_image_path, folder_name)
         augmented_image_path = os.path.normpath(os.path.join(augmented_folder_path, augmented_image_name))
         
         # 증강된 이미지 저장
         os.makedirs(augmented_folder_path, exist_ok=True)
-        pil_image.save(augmented_image_path)
+        augmented_image.save(augmented_image_path, format="JPEG")  # JPG 형식으로 저장
         
         # 증강된 이미지 정보 생성
         new_row = row.copy()
