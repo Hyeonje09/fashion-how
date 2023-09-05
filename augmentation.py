@@ -1,7 +1,7 @@
 from torchvision import transforms
 from PIL import ImageFilter
 
-def gaussian_blur(image, kernel_size=19):
+def gaussian_blur(image, kernel_size=5):
     image_pil = image.filter(ImageFilter.GaussianBlur(kernel_size))
     return image_pil
 
