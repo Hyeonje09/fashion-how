@@ -9,7 +9,6 @@ import time
 import torch
 import torch.utils.data
 import torch.utils.data.distributed
-from torch.optim.lr_scheduler import StepLR
 
 
 parser = argparse.ArgumentParser()
@@ -30,6 +29,7 @@ a, _ = parser.parse_known_args()
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def main():
+    """ The main function for model training. """
     if os.path.exists('models') is False:
         os.makedirs('models')
 
@@ -44,8 +44,6 @@ def main():
     train_dataloader = torch.utils.data.DataLoader(train_dataset, batch_size=a.batch_size, shuffle=True, num_workers=0)
 
     optimizer = torch.optim.Adam(net.parameters(), lr=a.lr)
-    scheduler = StepLR(optimizer, step_size=10, gamma=0.9)  # 스케줄러 생성
-
     criterion = nn.CrossEntropyLoss().to(DEVICE)
 
     total_step = len(train_dataloader)
@@ -54,7 +52,6 @@ def main():
 
     for epoch in range(a.epochs):
         net.train()
-        scheduler.step()  # 스케줄러에 따라 학습률 업데이트
 
         for i, sample in enumerate(train_dataloader):
             optimizer.zero_grad()
@@ -69,7 +66,7 @@ def main():
             loss_embel = criterion(out_embel, sample['embel_label'])
             loss = loss_daily + loss_gender + loss_embel
 
-            loss.backward() 
+            loss.backward()
             optimizer.step()
 
             if (i + 1) % 10 == 0:
@@ -83,7 +80,6 @@ def main():
         if ((epoch + 1) % 10 == 0):
             a.lr *= 0.9
             optimizer = torch.optim.Adam(net.parameters(), lr=a.lr)
-            print("Learning rate is adjusted to:", optimizer.param_groups[0]['lr'])
             print("learning rate is decayed")
 
 
@@ -93,5 +89,7 @@ def main():
             print('OK.')
 
 
+
 if __name__ == '__main__':
     main()
+
