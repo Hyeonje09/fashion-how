@@ -8,7 +8,7 @@ class ResExtractor(nn.Module):
 
         if resnetnum == '18':
             self.resnet = models.resnet18(pretrained=pretrained)
-            #self.resnet.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+            self.resnet.conv1 = nn.Conv2d(3, 64, kernel_size=5, stride=2, padding=3, bias=False)
         elif resnetnum == '34':
             self.resnet = models.resnet34(pretrained=pretrained)
         elif resnetnum == '50':
@@ -33,7 +33,7 @@ class Baseline_ResNet_emo(nn.Module):
         super(Baseline_ResNet_emo, self).__init__()
 
         self.encoder = ResExtractor('18')
-        self.avg_pool = nn.AvgPool2d(kernel_size=7)
+        self.avg_pool = nn.AvgPool2d(kernel_size=5)
 
         self.daily_linear = nn.Linear(512, 7)
         self.gender_linear = nn.Linear(512, 6)
