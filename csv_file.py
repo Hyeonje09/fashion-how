@@ -15,8 +15,7 @@ print(f"Using device: {device}")
 augmentation_functions = [
     gaussian_blur,
     flip,
-    plus_rotate,
-    minus_rotate,
+    random_rotate,
 ]
 
 # 경로 설정
