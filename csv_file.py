@@ -14,8 +14,13 @@ print(f"Using device: {device}")
 # 증강 함수들
 augmentation_functions = [
     gaussian_blur,
-    flip,
+    vertical_flip,
     random_rotate,
+    color_jitter,
+    grayscale,
+    affine_transform,
+    cutout, 
+    sharpness 
 ]
 
 # 경로 설정
